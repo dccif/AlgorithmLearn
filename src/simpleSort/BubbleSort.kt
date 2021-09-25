@@ -1,4 +1,4 @@
-package SimpleSort
+package simpleSort
 
 fun bubbleSort(arr: Array<Int>?) {
     if (arr == null || arr.size < 2) {

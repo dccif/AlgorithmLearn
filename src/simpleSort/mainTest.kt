@@ -1,4 +1,4 @@
-package SimpleSort
+package simpleSort
 
 fun generateRandomArray(maxSize: Int, maxValue: Int): Array<Int> {
     return Array<Int>(((maxSize + 1) * Math.random()).toInt()) {
