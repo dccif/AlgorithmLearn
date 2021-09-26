@@ -13,7 +13,7 @@ fun selectionSort(arr: Array<Int>?) {
     }
 }
 
-fun swap(arr: Array<Int>, i: Int, j: Int) {
+fun <T> swap(arr: Array<T>, i: Int, j: Int) {
     val tmp = arr[i]
     arr[i] = arr[j]
     arr[j] = tmp
