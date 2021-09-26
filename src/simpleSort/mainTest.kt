@@ -20,6 +20,7 @@ fun main() {
         val arr1 = generateRandomArray(maxSize, maxValue)
         val arr2 = arr1.copyOf()
         insertionSort(arr1)
+//        radixSort(arr1)
         comparator(arr2)
         if (!(arr1 contentEquals arr2)) {
             succeed = false
