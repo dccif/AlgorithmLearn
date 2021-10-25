@@ -2,10 +2,6 @@ package tree
 
 import java.util.*
 
-class Node<T>(data: T, val left: Node<T>?, val right: Node<T>?) {
-    val value = data
-}
-
 fun <T> preOrderRecur(head: Node<T>?) {
     if (head == null) {
         return
