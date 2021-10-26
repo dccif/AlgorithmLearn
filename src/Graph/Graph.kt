@@ -3,7 +3,7 @@ package Graph
 import java.util.*
 
 class Edge<T>(
-    val weight: T,
+    val weight: Int,
     val from: Node<T>?,
     val to: Node<T>?
 )
@@ -63,4 +63,88 @@ fun <T> bfsGraph(node: Node<T>?) {
             }
         }
     }
+}
+
+fun <T> dfsGraph(node: Node<T>?) {
+    if (node == null) {
+        return
+    }
+    val stack: Stack<Node<T>> = Stack()
+    val set: HashSet<Node<T>> = HashSet()
+    stack.add(node)
+    set.add(node)
+    println(node.value)
+    while (!stack.isEmpty()) {
+        val cur = stack.pop()
+        for (nxt in cur.nexts) {
+            if (!set.contains(nxt)) {
+                stack.push(cur)
+                stack.push(nxt)
+                set.add(nxt!!)
+                println(nxt.value)
+                break
+            }
+        }
+    }
+}
+
+fun <T> sortedTopology(graph: Graph<T>): List<Node<T>?> {
+    val inMap: HashMap<Node<T>?, Int> = hashMapOf()
+    val zeroInQueue: Queue<Node<T>?> = LinkedList()
+    for (node in graph.nodes.values) {
+        inMap.put(node, node!!.invalue)
+        if (node.invalue == 0) {
+            zeroInQueue.add(node)
+        }
+    }
+
+    val resultList = arrayListOf<Node<T>?>()
+    while (!zeroInQueue.isEmpty()) {
+        val cur = zeroInQueue.poll()
+        resultList.add(cur)
+        for (nxt in cur!!.nexts) {
+            inMap.put(nxt, inMap.get(nxt)!!.minus(1))
+            if (inMap.get(nxt) == 0) {
+                zeroInQueue.add(nxt)
+            }
+        }
+    }
+    return resultList
+}
+
+fun <T> dijkstra1(head: Node<T>?): HashMap<Node<T>, Int> {
+    val distanceMap: HashMap<Node<T>, Int> = hashMapOf()
+    distanceMap.put(head!!, 0)
+    val selectedNodes: HashSet<Node<T>> = hashSetOf()
+    var minNode: Node<T>? = getMinDistanceAndUnselectedNode(distanceMap, selectedNodes)
+    while (minNode != null) {
+        val distance: Int = distanceMap.get(minNode)!!
+        for (edge in minNode.edges) {
+            val toNode = edge!!.to
+            if (!distanceMap.containsKey(toNode)) {
+                distanceMap.put(toNode!!, distance.plus(edge.weight))
+            }
+            edge.to?.let { distanceMap.put(it, Math.min(distanceMap.get(toNode)!!, distance + edge.weight)) }
+        }
+        selectedNodes.add(minNode)
+        minNode = getMinDistanceAndUnselectedNode(distanceMap, selectedNodes)
+    }
+    return distanceMap
+}
+
+fun <T> getMinDistanceAndUnselectedNode(
+    distanceMap: AbstractMap<Node<T>, Int>,
+    touchedNodes: HashSet<Node<T>>
+): Node<T>? {
+    var minNode: Node<T>? = null
+    var minDistance = Int.MAX_VALUE
+    for (entry in distanceMap.entries) {
+        val node: Node<T>? = entry.key
+        val distance = entry.value
+        if (!touchedNodes.contains(node) && distance < minDistance) {
+            minNode = node
+            minDistance = distance
+        }
+    }
+    return minNode
 }
