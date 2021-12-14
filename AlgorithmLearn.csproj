@@ -8,4 +8,10 @@
     <StartupObject>LowestLexicography</StartupObject>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="out\**" />
+    <EmbeddedResource Remove="out\**" />
+    <None Remove="out\**" />
+  </ItemGroup>
+
 </Project>
