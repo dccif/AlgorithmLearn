@@ -16,3 +16,9 @@ fun lessMoney(arr: Array<Int>): Int {
     }
     return sum
 }
+
+class MinheapComparator : Comparator<Int> {
+    override fun compare(o1: Int?, o2: Int?): Int {
+        return o1!! - o2!!
+    }
+}
