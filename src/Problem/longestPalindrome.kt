@@ -42,13 +42,28 @@ class longestPalindrome {
         for (row in rows) ret.append(row)
         return ret.toString()
     }
+
+    fun reverse(x: Int): Int {
+        var x = x
+        var rev = 0
+        while (x != 0) {
+            val pop = x % 10
+            x /= 10
+            if (rev > Int.MAX_VALUE / 10 || rev == Int.MAX_VALUE / 10 && pop > 7) return 0
+            if (rev < Int.MIN_VALUE / 10 || rev == Int.MIN_VALUE / 10 && pop < -8) return 0
+            rev = rev * 10 + pop
+        }
+        return rev
+    }
 }
 
 fun main() {
     var a = "abacdfgdcaba"
     var b = "abacdgfdcaba"
+    var n = -123124
     var test = longestPalindrome()
 
     println(test.longestPalindrome(a))
     println(test.convert(a,3))
+    println(test.reverse(n))
 }
