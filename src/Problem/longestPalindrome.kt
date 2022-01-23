@@ -27,6 +27,7 @@ class longestPalindrome {
         }
         return R - L - 1
     }
+
     fun convert(s: String, numRows: Int): String? {
         if (numRows == 1) return s
         val rows: MutableList<StringBuilder> = ArrayList()
@@ -55,6 +56,58 @@ class longestPalindrome {
         }
         return rev
     }
+
+    fun myAtoi(input: String): Int {
+        var sign = 1
+        var result = 0
+        var index = 0
+        val n = input.length
+
+        // Discard all spaces from the beginning of the input string.
+        while (index < n && input[index] == ' ') {
+            index++
+        }
+
+        // sign = +1, if it's positive number, otherwise sign = -1.
+        if (index < n && input[index] == '+') {
+            sign = 1
+            index++
+        } else if (index < n && input[index] == '-') {
+            sign = -1
+            index++
+        }
+
+        // Traverse next digits of input and stop if it is not a digit
+        while (index < n && Character.isDigit(input[index])) {
+            val digit = input[index] - '0'
+
+            // Check overflow and underflow conditions.
+            if (result > Int.MAX_VALUE / 10 || result == Int.MAX_VALUE / 10 && digit > Int.MAX_VALUE % 10) {
+                // If integer overflowed return 2^31-1, otherwise if underflowed return -2^31.
+                return if (sign == 1) Int.MAX_VALUE else Int.MIN_VALUE
+            }
+
+            // Append current digit to the result.
+            result = 10 * result + digit
+            index++
+        }
+
+        // We have formed a valid number without any overflow/underflow.
+        // Return it after multiplying it with its sign.
+        return sign * result
+    }
+
+    fun isPalindrome(x: Int): Boolean {
+        var x = x
+        if (x < 0 || (x % 10 == 0 && x != 0)) return false
+        var revertnumbe = 0
+        while (x > revertnumbe) {
+            revertnumbe = revertnumbe * 10 + x % 10
+            x /= 10
+        }
+
+        return x == revertnumbe || x == revertnumbe / 10
+    }
 }
 
 fun main() {
@@ -64,6 +117,6 @@ fun main() {
     var test = longestPalindrome()
 
     println(test.longestPalindrome(a))
-    println(test.convert(a,3))
+    println(test.convert(a, 3))
     println(test.reverse(n))
 }
