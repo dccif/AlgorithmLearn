@@ -49,11 +49,35 @@ fun process2(limit: Int, colLim: Int, leftDiaLim: Int, rightDiaLim: Int): Int {
         mostRightOne = pos and (pos.inv() + 1)
         pos = pos - mostRightOne
         res += process2(
-            limit,
-            colLim or mostRightOne,
-            (leftDiaLim or mostRightOne) shl 1,
-            (rightDiaLim or mostRightOne) ushr 1
+            limit, colLim or mostRightOne, (leftDiaLim or mostRightOne) shl 1, (rightDiaLim or mostRightOne) ushr 1
         )
     }
     return res
+}
+
+fun Permutation(str: String): ArrayList<String> {
+    var res = ArrayList<String>()
+    if (str == null || str.length == 0) {
+        return res
+    }
+    var chs = str.toCharArray()
+    processChar(chs, 0, res)
+    return res
+}
+
+fun processChar(str: CharArray, i: Int, res: java.util.ArrayList<String>) {
+    if (i == str.size) {
+        res.add(String(str))
+    }
+    for (j in i..str.size) {
+        swap(str, i, j)
+        processChar(str, i + 1, res)
+        swap(str,i,j)
+    }
+}
+
+fun swap(chs: CharArray, i: Int, j: Int) {
+    val tmp = chs[i]
+    chs[i] = chs[j]
+    chs[j] = tmp
 }
