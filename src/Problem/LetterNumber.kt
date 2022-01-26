@@ -390,6 +390,143 @@ fun divide(dividend: Int, divisor: Int): Int {
     return quotient
 }
 
+
+private val wordCount = HashMap<String, Int>()
+private var n = 0
+private var wordLength = 0
+private var substringSize = 0
+private var k = 0
+
+private fun slidingWindow(left: Int, s: String, answer: MutableList<Int>) {
+    var left = left
+    val wordsFound = HashMap<String, Int>()
+    var wordsUsed = 0
+    var excessWord = false
+
+    // Do the same iteration pattern as the previous approach - iterate
+    // word_length at a time, and at each iteration we focus on one word
+    var right = left
+    while (right <= n - wordLength) {
+        val sub = s.substring(right, right + wordLength)
+        if (!wordCount.containsKey(sub)) {
+            // Mismatched word - reset the window
+            wordsFound.clear()
+            wordsUsed = 0
+            excessWord = false
+            left = right + wordLength
+        } else {
+            // If we reached max window size or have an excess word
+            while (right - left == substringSize || excessWord) {
+                val leftmostWord = s.substring(left, left + wordLength)
+                left += wordLength
+                wordsFound[leftmostWord] = wordsFound[leftmostWord]!! - 1
+                if (wordsFound[leftmostWord]!! >= wordCount[leftmostWord]!!) {
+                    // This word was an excess word
+                    excessWord = false
+                } else {
+                    // Otherwise we actually needed it
+                    wordsUsed--
+                }
+            }
+
+            // Keep track of how many times this word occurs in the window
+            wordsFound[sub] = wordsFound.getOrDefault(sub, 0) + 1
+            if (wordsFound[sub]!! <= wordCount[sub]!!) {
+                wordsUsed++
+            } else {
+                // Found too many instances already
+                excessWord = true
+            }
+            if (wordsUsed == k && !excessWord) {
+                // Found a valid substring
+                answer.add(left)
+            }
+        }
+        right += wordLength
+    }
+}
+
+fun findSubstring(s: String, words: Array<String>): List<Int>? {
+    n = s.length
+    k = words.size
+    wordLength = words[0].length
+    substringSize = wordLength * k
+    for (word in words) {
+        wordCount[word] = wordCount.getOrDefault(word, 0) + 1
+    }
+    val answer: MutableList<Int> = ArrayList()
+    for (i in 0 until wordLength) {
+        slidingWindow(i, s, answer)
+    }
+    return answer
+}
+
+fun nextPermutation(nums: IntArray) {
+    var i = nums.size - 2
+    while (i >= 0 && nums[i + 1] <= nums[i]) {
+        i--
+    }
+    if (i >= 0) {
+        var j = nums.size - 1
+        while (nums[j] <= nums[i]) {
+            j--
+        }
+        swap(nums, i, j)
+    }
+    reverse(nums, i + 1)
+}
+
+private fun reverse(nums: IntArray, start: Int) {
+    var i = start
+    var j = nums.size - 1
+    while (i < j) {
+        swap(nums, i, j)
+        i++
+        j--
+    }
+}
+
+private fun swap(nums: IntArray, i: Int, j: Int) {
+    val temp = nums[i]
+    nums[i] = nums[j]
+    nums[j] = temp
+}
+
+fun longestValidParentheses(s: String): Int {
+    var left = 0
+    var right = 0
+    var maxlength = 0
+    for (i in 0 until s.length) {
+        if (s[i] == '(') {
+            left++
+        } else {
+            right++
+        }
+        if (left == right) {
+            maxlength = Math.max(maxlength, 2 * right)
+        } else if (right >= left) {
+            right = 0
+            left = right
+        }
+    }
+    right = 0
+    left = right
+    for (i in s.length - 1 downTo 0) {
+        if (s[i] == '(') {
+            left++
+        } else {
+            right++
+        }
+        if (left == right) {
+            maxlength = Math.max(maxlength, 2 * left)
+        } else if (left >= right) {
+            right = 0
+            left = right
+        }
+    }
+    return maxlength
+}
+
 fun main() {
     println(letterCombinations("23"))
     println(generateParenthesis(3))
