@@ -1,5 +1,6 @@
 package Problem
 
+
 class searchinarray {
     lateinit var nums: IntArray
     var target = 0
@@ -116,4 +117,125 @@ fun searchInsert(nums: IntArray, target: Int): Int {
         if (target < nums[pivot]) right = pivot - 1 else left = pivot + 1
     }
     return left
+}
+
+fun isValidSudoku1(board: Array<CharArray>): Boolean {
+    val N = 9
+
+    // Use hash set to record the status
+    val rows: Array<HashSet<Char>> = Array(N) { HashSet<Char>(N) }
+    val cols: Array<HashSet<Char>> = Array(N) { HashSet<Char>(N) }
+    val boxes: Array<HashSet<Char>> = Array(N) { HashSet<Char>(N) }
+//    for (r in 0 until N) {
+//        rows[r] = HashSet()
+//        cols[r] = HashSet()
+//        boxes[r] = HashSet()
+//    }
+    for (r in 0 until N) {
+        for (c in 0 until N) {
+            val `val` = board[r][c]
+
+            // Check if the position is filled with number
+            if (`val` == '.') {
+                continue
+            }
+
+            // Check the row
+            if (rows[r].contains(`val`)) {
+                return false
+            }
+            rows[r].add(`val`)
+
+            // Check the column
+            if (cols[c].contains(`val`)) {
+                return false
+            }
+            cols[c].add(`val`)
+
+            // Check the box
+            val idx = r / 3 * 3 + c / 3
+            if (boxes[idx].contains(`val`)) {
+                return false
+            }
+            boxes[idx].add(`val`)
+        }
+    }
+    return true
+}
+
+fun isValidSudoku2(board: Array<CharArray>): Boolean {
+    val N = 9
+
+    // Use an array to record the status
+    val rows = Array(N) { IntArray(N) }
+    val cols = Array(N) { IntArray(N) }
+    val boxes = Array(N) { IntArray(N) }
+    for (r in 0 until N) {
+        for (c in 0 until N) {
+            // Check if the position is filled with number
+            if (board[r][c] == '.') {
+                continue
+            }
+            val pos = board[r][c] - '1'
+
+            // Check the row
+            if (rows[r][pos] == 1) {
+                return false
+            }
+            rows[r][pos] = 1
+
+            // Check the column
+            if (cols[c][pos] == 1) {
+                return false
+            }
+            cols[c][pos] = 1
+
+            // Check the box
+            val idx = r / 3 * 3 + c / 3
+            if (boxes[idx][pos] == 1) {
+                return false
+            }
+            boxes[idx][pos] = 1
+        }
+    }
+    return true
+}
+
+fun isValidSudoku3(board: Array<CharArray>): Boolean {
+    val N = 9
+
+    // Use a binary number to record previous occurrence
+    val rows = IntArray(N)
+    val cols = IntArray(N)
+    val boxes = IntArray(N)
+    for (r in 0 until N) {
+        for (c in 0 until N) {
+            // Check if the position is filled with number
+            if (board[r][c] == '.') {
+                continue
+            }
+            val `val` = board[r][c] - '0'
+            val pos = 1 shl `val` - 1
+
+            // Check the row
+            if (rows[r] and pos > 0) {
+                return false
+            }
+            rows[r] = rows[r] or pos
+
+            // Check the column
+            if (cols[c] and pos > 0) {
+                return false
+            }
+            cols[c] = cols[c] or pos
+
+            // Check the box
+            val idx = r / 3 * 3 + c / 3
+            if (boxes[idx] and pos > 0) {
+                return false
+            }
+            boxes[idx] = boxes[idx] or pos
+        }
+    }
+    return true
 }
