@@ -1,5 +1,7 @@
 package Problem
 
+import java.util.*
+
 
 var size1 = 0
 val solutions: MutableList<List<String>> = ArrayList()
@@ -161,4 +163,82 @@ fun canJump(nums: IntArray): Boolean {
         }
     }
     return lastPos == 0
+}
+
+fun merge(intervals: Array<IntArray>): Array<IntArray>? {
+    Arrays.sort(
+        intervals
+    ) { a: IntArray, b: IntArray -> Integer.compare(a[0], b[0]) }
+    val merged = LinkedList<IntArray>()
+    for (interval in intervals) {
+        // if the list of merged intervals is empty or if the current
+        // interval does not overlap with the previous, simply append it.
+        if (merged.isEmpty() || merged.last[1] < interval[0]) {
+            merged.add(interval)
+        } else {
+            merged.last[1] = Math.max(merged.last[1], interval[1])
+        }
+    }
+    return merged.toTypedArray()
+}
+
+fun insert(intervals: Array<IntArray>, newInterval: IntArray): Array<IntArray>? {
+    // init data
+    val newStart = newInterval[0]
+    val newEnd = newInterval[1]
+    var idx = 0
+    val n = intervals.size
+    val output = LinkedList<IntArray>()
+
+    // add all intervals starting before newInterval
+    while (idx < n && newStart > intervals[idx][0]) output.add(intervals[idx++])
+
+    // add newInterval
+    var interval = IntArray(2)
+    // if there is no overlap, just add the interval
+    if (output.isEmpty() || output.last[1] < newStart) output.add(newInterval) else {
+        interval = output.removeLast()
+        interval[1] = Math.max(interval[1], newEnd)
+        output.add(interval)
+    }
+
+    // add next intervals, merge with newInterval if needed
+    while (idx < n) {
+        interval = intervals[idx++]
+        val start = interval[0]
+        val end = interval[1]
+        // if there is no overlap, just add an interval
+        if (output.last[1] < start) output.add(interval) else {
+            interval = output.removeLast()
+            interval[1] = Math.max(interval[1], end)
+            output.add(interval)
+        }
+    }
+    return output.toArray(Array(output.size) { IntArray(2) })
+}
+
+fun lengthOfLastWord(s: String): Int {
+    var s = s
+    s = s.trim { it <= ' ' } // trim the trailing spaces in the string
+    return s.length - s.lastIndexOf(" ") - 1
+}
+
+fun generateMatrix(n: Int): Array<IntArray>? {
+    val result = Array(n) { IntArray(n) }
+    var cnt = 1
+    val dir = arrayOf(intArrayOf(0, 1), intArrayOf(1, 0), intArrayOf(0, -1), intArrayOf(-1, 0))
+    var d = 0
+    var row = 0
+    var col = 0
+    while (cnt <= n * n) {
+        result[row][col] = cnt++
+        val r = Math.floorMod(row + dir[d][0], n)
+        val c = Math.floorMod(col + dir[d][1], n)
+
+        // change direction if next cell is non zero
+        if (result[r][c] != 0) d = (d + 1) % 4
+        row += dir[d][0]
+        col += dir[d][1]
+    }
+    return result
 }
