@@ -1,6 +1,8 @@
 package Problem
 
 import java.util.*
+import java.util.Map
+import java.util.Set
 
 
 var size1 = 0
@@ -241,4 +243,152 @@ fun generateMatrix(n: Int): Array<IntArray>? {
         col += dir[d][1]
     }
     return result
+}
+
+fun rotateRight(head: ListNode?, k: Int): ListNode? {
+    // base cases
+    if (head == null) return null
+    if (head.next == null) return head
+
+    // close the linked list into the ring
+    var old_tail = head
+    var n: Int
+    n = 1
+    while (old_tail!!.next != null) {
+        old_tail = old_tail.next
+        n++
+    }
+    old_tail.next = head
+
+    // find new tail : (n - k % n - 1)th node
+    // and new head : (n - k % n)th node
+    var new_tail = head
+    for (i in 0 until n - k % n - 1) new_tail = new_tail!!.next
+    val new_head = new_tail!!.next
+
+    // break the ring
+    new_tail.next = null
+    return new_head
+}
+
+fun uniquePaths(m: Int, n: Int): Int {
+    val d = Array(m) { IntArray(n) }
+    for (arr in d) {
+        Arrays.fill(arr, 1)
+    }
+    for (col in 1 until m) {
+        for (row in 1 until n) {
+            d[col][row] = d[col - 1][row] + d[col][row - 1]
+        }
+    }
+    return d[m - 1][n - 1]
+}
+
+fun uniquePathsWithObstacles(obstacleGrid: Array<IntArray>): Int {
+    val R = obstacleGrid.size
+    val C = obstacleGrid[0].size
+
+    // If the starting cell has an obstacle, then simply return as there would be
+    // no paths to the destination.
+    if (obstacleGrid[0][0] == 1) {
+        return 0
+    }
+
+    // Number of ways of reaching the starting cell = 1.
+    obstacleGrid[0][0] = 1
+
+    // Filling the values for the first column
+    for (i in 1 until R) {
+        obstacleGrid[i][0] = if (obstacleGrid[i][0] == 0 && obstacleGrid[i - 1][0] == 1) 1 else 0
+    }
+
+    // Filling the values for the first row
+    for (i in 1 until C) {
+        obstacleGrid[0][i] = if (obstacleGrid[0][i] == 0 && obstacleGrid[0][i - 1] == 1) 1 else 0
+    }
+
+    // Starting from cell(1,1) fill up the values
+    // No. of ways of reaching cell[i][j] = cell[i - 1][j] + cell[i][j - 1]
+    // i.e. From above and left.
+    for (i in 1 until R) {
+        for (j in 1 until C) {
+            if (obstacleGrid[i][j] == 0) {
+                obstacleGrid[i][j] = obstacleGrid[i - 1][j] + obstacleGrid[i][j - 1]
+            } else {
+                obstacleGrid[i][j] = 0
+            }
+        }
+    }
+
+    // Return value stored in rightmost bottommost cell. That is the destination.
+    return obstacleGrid[R - 1][C - 1]
+}
+
+// This is the DFA we have designed above
+private val dfa = listOf<MutableMap<String,Int>>(
+    Map.of("digit", 1, "sign", 2, "dot", 3),
+    Map.of("digit", 1, "dot", 4, "exponent", 5),
+    Map.of("digit", 1, "dot", 3),
+    Map.of("digit", 4),
+    Map.of("digit", 4, "exponent", 5),
+    Map.of("sign", 6, "digit", 7),
+    Map.of("digit", 7),
+    Map.of("digit", 7)
+)
+
+// These are all of the valid finishing states for our DFA.
+private val validFinalStates = Set.of(1, 4, 7)
+
+fun isNumber(s: String): Boolean {
+    var currentState = 0
+    var group = ""
+    for (i in 0 until s.length) {
+        val curr = s[i]
+        group = if (Character.isDigit(curr)) {
+            "digit"
+        } else if (curr == '+' || curr == '-') {
+            "sign"
+        } else if (curr == 'e' || curr == 'E') {
+            "exponent"
+        } else if (curr == '.') {
+            "dot"
+        } else {
+            return false
+        }
+        if (!dfa[currentState].containsKey(group)) {
+            return false
+        }
+        currentState = dfa[currentState][group]!!
+    }
+    return validFinalStates.contains(currentState)
+}
+
+fun isNumber2(s: String): Boolean {
+    var seenDigit = false
+    var seenExponent = false
+    var seenDot = false
+    for (i in 0 until s.length) {
+        val curr = s[i]
+        if (Character.isDigit(curr)) {
+            seenDigit = true
+        } else if (curr == '+' || curr == '-') {
+            if (i > 0 && s[i - 1] != 'e' && s[i - 1] != 'E') {
+                return false
+            }
+        } else if (curr == 'e' || curr == 'E') {
+            if (seenExponent || !seenDigit) {
+                return false
+            }
+            seenExponent = true
+            seenDigit = false
+        } else if (curr == '.') {
+            if (seenDot || seenExponent) {
+                return false
+            }
+            seenDot = true
+        } else {
+            return false
+        }
+    }
+    return seenDigit
 }
