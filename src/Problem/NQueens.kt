@@ -392,3 +392,88 @@ fun isNumber2(s: String): Boolean {
     }
     return seenDigit
 }
+
+fun plusOne(digits: IntArray): IntArray? {
+    var digits = digits
+    val n = digits.size
+
+    // move along the input array starting from the end
+    for (idx in n - 1 downTo 0) {
+        // set all the nines at the end of array to zeros
+        if (digits[idx] == 9) {
+            digits[idx] = 0
+        } else {
+            // increase this rightmost not-nine by 1
+            digits[idx]++
+            // and the job is done
+            return digits
+        }
+    }
+    // we're here because all the digits are nines
+    digits = IntArray(n + 1)
+    digits[0] = 1
+    return digits
+}
+
+fun addBinary(a: String, b: String): String? {
+    val n = a.length
+    val m = b.length
+    if (n < m) return addBinary(b, a)
+    val L = Math.max(n, m)
+    val sb = StringBuilder()
+    var carry = 0
+    var j = m - 1
+    for (i in L - 1 downTo -1 + 1) {
+        if (a[i] == '1') ++carry
+        if (j > -1 && b[j--] == '1') ++carry
+        if (carry % 2 == 1) sb.append('1') else sb.append('0')
+        carry /= 2
+    }
+    if (carry == 1) sb.append('1')
+    sb.reverse()
+    return sb.toString()
+}
+
+fun mySqrt(x: Int): Int {
+    if (x < 2) return x
+    val left = Math.pow(Math.E, 0.5 * Math.log(x.toDouble())).toInt()
+    val right = left + 1
+    return if (right.toLong() * right > x) left else right
+}
+
+fun simplifyPath(path: String): String? {
+
+    // Initialize a stack
+    val stack = Stack<String>()
+    val components = path.split("/".toRegex()).toTypedArray()
+
+    // Split the input string on "/" as the delimiter
+    // and process each portion one by one
+    for (directory in components) {
+
+        // A no-op for a "." or an empty string
+        if (directory == "." || directory.isEmpty()) {
+            continue
+        } else if (directory == "..") {
+
+            // If the current component is a "..", then
+            // we pop an entry from the stack if it's non-empty
+            if (!stack.isEmpty()) {
+                stack.pop()
+            }
+        } else {
+
+            // Finally, a legitimate directory name, so we add it
+            // to our stack
+            stack.add(directory)
+        }
+    }
+
+    // Stich together all the directory names together
+    val result = StringBuilder()
+    for (dir in stack) {
+        result.append("/")
+        result.append(dir)
+    }
+    return if (result.length > 0) result.toString() else "/"
+}
